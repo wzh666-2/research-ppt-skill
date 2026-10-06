@@ -1,0 +1,261 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "journal-club",
+  "language": "zh",
+  "status": "complete",
+  "title": "自适应多速率耦合可降低流固计算成本，同时保持界面能量一致性",
+  "subtitle": "计算方法论文汇报 · 完全合成示例",
+  "presenter": "wzh666-2",
+  "affiliation": "计算工程研究组",
+  "date": "2026-09-28",
+  "audience": "计算力学与流固耦合研究人员",
+  "durationMinutes": 20,
+  "missingInputs": [],
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Adaptive Multirate Coupling for Partitioned Fluid–Structure Interaction (synthetic paper)",
+      "authors": "Synthetic Research Team",
+      "year": 2026,
+      "synthetic": true,
+      "license": "CC BY 4.0",
+      "usage": "All methods and numerical values are fictional and created for this example."
+    },
+    {
+      "id": "S2",
+      "title": "Research PPT Skill original example dataset",
+      "authors": "wzh666-2",
+      "year": 2026,
+      "synthetic": true,
+      "license": "CC BY 4.0",
+      "usage": "Editable charts and tables in this deck."
+    }
+  ],
+  "slides": [
+    {
+      "kind": "cover",
+      "title": "封面",
+      "takeaway": "结论先行：用局部时间尺度分配计算预算，而不是统一缩小全局步长。",
+      "timeSeconds": 30,
+      "speakerNotes": "说明这是完全合成的论文与数据，仅用于演示 Skill 的结构、视觉和可编辑对象。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "statement",
+      "section": "核心结论",
+      "title": "主张成立的前提，是误差控制与能量监测同时在线",
+      "statement": "在合成基准中，自适应多速率方案将计算时间降低约 38%，界面能量漂移仍控制在 1% 内。",
+      "body": ["收益来自对快、慢子系统使用不同子步数。", "仅比较终态位移会掩盖耦合不稳定，因此必须跟踪界面功。"],
+      "timeSeconds": 75,
+      "speakerNotes": "先讲结论，再强调结论边界：数据为合成示例；真实汇报应替换为论文报告值。",
+      "citations": ["S1", "S2"]
+    },
+    {
+      "kind": "text",
+      "section": "研究问题",
+      "title": "统一时间步把最昂贵的尺度强加给了整个耦合系统",
+      "takeaway": "瓶颈不是每个求解器都慢，而是它们被迫以同一节奏前进。",
+      "body": ["流体稳定步长受对流尺度限制，结构响应可能更慢。", "强耦合迭代在每个全局步重复调用两个求解器。", "当局部误差分布不均时，统一减小步长会浪费计算。"],
+      "timeSeconds": 70,
+      "speakerNotes": "用工程直觉解释：快系统需要细步，慢系统不一定需要。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "comparison",
+      "section": "文献缺口",
+      "title": "现有加速方法常优化单次迭代，却没有重分配时间尺度",
+      "takeaway": "本文的差异点是把误差预算与子步调度直接绑定。",
+      "comparison": {
+        "left": {"title": "已有路线", "items": ["松弛或准牛顿：减少耦合迭代数", "代理模型：降低单次求解成本", "固定子循环：步数由经验预设"]},
+        "right": {"title": "尚未解决", "items": ["不同阶段的最优子步数会变化", "终态误差无法刻画界面能量失配", "固定策略缺少可解释的误差上限"]}
+      },
+      "timeSeconds": 80,
+      "speakerNotes": "把新意放在可解释的动态调度，而不是单纯更快。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "diagram",
+      "section": "方法总览",
+      "title": "控制器在每个宏步内完成预测、监测与子步重分配",
+      "takeaway": "宏步长度不变，内部预算根据局部误差动态变化。",
+      "diagram": {
+        "nodes": [
+          {"id": "a", "label": "状态预测", "detail": "外推界面变量"},
+          {"id": "b", "label": "并行推进", "detail": "流体 / 结构子步"},
+          {"id": "c", "label": "残差监测", "detail": "位移 + 界面功"},
+          {"id": "d", "label": "预算更新", "detail": "调整下一宏步子步数"}
+        ],
+        "edges": [
+          {"from": "a", "to": "b", "label": "初值"},
+          {"from": "b", "to": "c", "label": "响应"},
+          {"from": "c", "to": "d", "label": "误差"}
+        ]
+      },
+      "body": ["控制器不改变底层求解器，只改变调用节奏。", "超出能量阈值时回退到保守配置。"],
+      "timeSeconds": 90,
+      "speakerNotes": "从左到右讲流程；强调侵入性低。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "text",
+      "section": "算法机制",
+      "title": "双指标控制避免“位移看似收敛、能量仍在漂移”",
+      "takeaway": "位移残差决定精度，界面功残差承担稳定性哨兵。",
+      "body": ["预测误差决定是否增加流体或结构子步。", "界面功误差触发耦合回退与宏步重算。", "控制器使用滞回区间，避免子步数在阈值附近震荡。", "最大子步数与重算次数提供确定的成本上限。"],
+      "timeSeconds": 80,
+      "speakerNotes": "指出双指标各自职责，避免把两个阈值讲成重复功能。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "table",
+      "section": "实验设置",
+      "title": "三类基准分别检验精度、强非线性与长时间稳定性",
+      "takeaway": "评价不只看误差，还要看成本与能量行为。",
+      "table": {
+        "headers": ["基准", "流体网格", "结构自由度", "时间窗", "主要指标"],
+        "rows": [
+          ["弹性梁", "42k", "1.8k", "20 s", "位移误差 / 耗时"],
+          ["柔性翼", "118k", "4.6k", "12 周期", "升力 / 相位差"],
+          ["脉动管", "86k", "3.1k", "60 s", "界面功漂移"]
+        ],
+        "columnWidths": [2.0, 1.7, 1.9, 1.7, 4.6]
+      },
+      "timeSeconds": 65,
+      "speakerNotes": "所有设置均为合成；正式汇报应逐项核对论文正文和补充材料。",
+      "citations": ["S1", "S2"]
+    },
+    {
+      "kind": "chart",
+      "section": "关键结果 1",
+      "title": "自适应调度在三个合成基准上都降低了总耗时",
+      "takeaway": "平均耗时下降约 38%，且收益在更强非线性问题上更明显。",
+      "chart": {
+        "type": "column",
+        "categories": ["弹性梁", "柔性翼", "脉动管"],
+        "series": [
+          {"name": "统一步长", "values": [100, 100, 100]},
+          {"name": "自适应多速率", "values": [68, 57, 61]}
+        ],
+        "unit": "归一化计算时间（%）",
+        "synthetic": true
+      },
+      "analysis": ["柔性翼收益最大：非线性阶段只在局部增加子步。", "脉动管的长时间监测带来额外开销，但仍有净收益。", "比较基线为同等终态误差约束。"],
+      "timeSeconds": 85,
+      "speakerNotes": "不要把归一化耗时误读为绝对秒数。强调基线误差约束一致。",
+      "citations": ["S1", "S2"]
+    },
+    {
+      "kind": "chart",
+      "section": "关键结果 2",
+      "title": "速度收益没有以界面能量失配为代价",
+      "takeaway": "能量漂移低于 1%，显著小于只用位移残差的控制器。",
+      "chart": {
+        "type": "bar",
+        "categories": ["双指标", "仅位移", "固定子循环"],
+        "series": [{"name": "最大能量漂移", "values": [0.7, 3.8, 1.9]}],
+        "unit": "%",
+        "synthetic": true
+      },
+      "analysis": ["仅位移控制在终态误差上可接受，但中间过程出现非物理能量积累。", "固定子循环更稳定，却牺牲了动态分配能力。"],
+      "timeSeconds": 85,
+      "speakerNotes": "把能量漂移解释为稳定性诊断，不等同于守恒定律的严格证明。",
+      "citations": ["S1", "S2"]
+    },
+    {
+      "kind": "chart",
+      "section": "关键结果 3",
+      "title": "计算预算随响应强度迁移，而不是长期停留在最保守配置",
+      "takeaway": "高负载阶段短暂加密，平稳阶段主动回收预算。",
+      "chart": {
+        "type": "line",
+        "categories": ["0", "2", "4", "6", "8", "10", "12"],
+        "series": [
+          {"name": "流体子步", "values": [2, 2, 4, 6, 4, 2, 2]},
+          {"name": "结构子步", "values": [1, 1, 2, 3, 2, 1, 1]}
+        ],
+        "unit": "每宏步子步数",
+        "synthetic": true
+      },
+      "analysis": ["第 4–8 周期为合成强响应区间。", "流体尺度变化更快，因此获得更高子步预算。", "滞回控制使回落过程平滑。"],
+      "timeSeconds": 85,
+      "speakerNotes": "横轴为周期序号；讲清控制器行为，而不是逐点读数。",
+      "citations": ["S1", "S2"]
+    },
+    {
+      "kind": "table",
+      "section": "消融与稳健性",
+      "title": "能量监测和滞回区间分别保障稳定性与调度平滑性",
+      "takeaway": "两个组件缺一不可，但对性能的贡献机制不同。",
+      "table": {
+        "headers": ["配置", "耗时下降", "能量漂移", "重算次数", "判断"],
+        "rows": [
+          ["完整方法", "38%", "0.7%", "2", "效率与稳定性平衡"],
+          ["无能量监测", "42%", "3.8%", "0", "更快但风险高"],
+          ["无滞回", "35%", "0.9%", "11", "频繁切换"],
+          ["固定子循环", "21%", "1.9%", "0", "稳健但保守"]
+        ],
+        "columnWidths": [2.2, 2.0, 2.0, 1.9, 3.8]
+      },
+      "timeSeconds": 80,
+      "speakerNotes": "说明合成消融的因果解释仍需真实论文证据支持。",
+      "citations": ["S1", "S2"]
+    },
+    {
+      "kind": "comparison",
+      "section": "证据评议",
+      "title": "证据支持“更省”，但还不足以证明“普遍更优”",
+      "takeaway": "基准覆盖面和对照强度决定结论外推范围。",
+      "comparison": {
+        "left": {"title": "支持结论的证据", "items": ["三类时间尺度不同的合成基准", "同等终态误差下比较成本", "报告能量漂移与重算开销"]},
+        "right": {"title": "尚存替代解释", "items": ["参数可能针对基准调优", "未覆盖湍流与接触非线性", "缺少与最新准牛顿策略的统一对比"]}
+      },
+      "timeSeconds": 80,
+      "speakerNotes": "区分内部有效性和外部有效性。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "text",
+      "section": "局限与复现",
+      "title": "复现风险主要集中在阈值选择、回退条件和并行调度细节",
+      "takeaway": "算法框架简单，但实现细节决定真实速度收益。",
+      "body": ["阈值归一化方式决定不同物理量能否公平比较。", "回退重算需要确定性检查点，否则成本难以复现。", "异步并行可能改变浮点累积顺序与收敛路径。", "若未公开调度日志，难以诊断收益来自哪里。"],
+      "timeSeconds": 75,
+      "speakerNotes": "把复现问题落到可检查的工程接口。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "statement",
+      "section": "对课题的启示",
+      "title": "最值得迁移的不是阈值数值，而是“误差—预算—回退”的闭环",
+      "statement": "把现有流固求解器的接口残差与能量日志接入轻量控制器，可先做离线回放，再决定是否在线调度。",
+      "body": ["第一步不改求解器：记录每个宏步的残差、能量和耗时。", "第二步用历史轨迹模拟不同调度策略，筛除不稳定区域。"],
+      "timeSeconds": 75,
+      "speakerNotes": "给出可执行迁移路径，避免只停留在泛泛启示。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "decision",
+      "section": "讨论",
+      "title": "下一步讨论应聚焦哪一种验证，而不是继续扩展算法功能",
+      "takeaway": "优先验证能否在现有数据上重现成本—稳定性权衡。",
+      "decision": {
+        "question": "我们是否先用现有柔性翼算例做离线调度回放？",
+        "options": ["A. 先做 3 条历史轨迹，成本最低", "B. 直接接入在线控制器，反馈最快但风险高", "C. 先补充一个长时间稳定性算例"],
+        "recommendation": "选择 A：两周内得到可否迁移的证据，再决定是否投入在线改造。"
+      },
+      "timeSeconds": 85,
+      "speakerNotes": "停下来收集组内意见，明确决策人和期限。",
+      "citations": ["S1"]
+    },
+    {
+      "kind": "sources",
+      "section": "来源登记",
+      "title": "全部内容为原创合成示例，来源和许可在此集中记录",
+      "takeaway": "真实汇报应把论文、数据、图像与用户材料逐项登记。",
+      "timeSeconds": 45,
+      "speakerNotes": "提醒听众不要引用本示例中的虚构论文和数值作为真实研究证据。",
+      "citations": ["S1", "S2"]
+    }
+  ]
+}
+

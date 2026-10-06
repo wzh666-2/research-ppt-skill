@@ -1,0 +1,59 @@
+name: release-v0.1.0
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run ci
+      - name: Install preview tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-impress poppler-utils zip
+      - name: Package skill and render previews
+        run: |
+          mkdir -p dist
+          cd skills
+          zip -r ../dist/research-ppt-maker-v0.1.0.zip research-ppt-maker
+          cd ..
+          libreoffice --headless --convert-to pdf --outdir dist examples/outputs/journal-club.zh.pptx
+          libreoffice --headless --convert-to pdf --outdir dist examples/outputs/lab-meeting.zh.pptx
+          pdftoppm -png -f 1 -singlefile -r 140 dist/journal-club.zh.pdf dist/journal-club-preview
+          pdftoppm -png -f 1 -singlefile -r 140 dist/lab-meeting.zh.pdf dist/lab-meeting-preview
+          cp examples/outputs/journal-club.zh.pptx dist/
+          cp examples/outputs/lab-meeting.zh.pptx dist/
+          rm dist/*.pdf
+      - name: Publish v0.1.0
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.0
+          target_commitish: main
+          name: v0.1.0
+          body: |
+            Initial release of the original Research PPT Maker skill.
+
+            Includes the installable Skill archive, a 16-slide journal-club
+            example, a 12-slide full lab-meeting example, and preview images.
+            All example research content and values are synthetic.
+          files: |
+            dist/research-ppt-maker-v0.1.0.zip
+            dist/journal-club.zh.pptx
+            dist/lab-meeting.zh.pptx
+            dist/journal-club-preview.png
+            dist/lab-meeting-preview.png
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+

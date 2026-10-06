@@ -1,0 +1,8 @@
+interface:
+  display_name: "Research PPT Maker"
+  short_description: "原创生成文献汇报与完整组会汇报 PPTX"
+  brand_color: "#1F7A78"
+  default_prompt: "Use $research-ppt-maker 文献汇报 to turn my paper or notes into an editable Chinese research deck."
+policy:
+  allow_implicit_invocation: true
+

@@ -12,4 +12,3 @@ examples/previews/raw/
 examples/previews/*.png
 examples/outputs/*.pptx
 dist/
-

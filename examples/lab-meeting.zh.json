@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "lab-meeting",
+  "language": "zh",
+  "status": "complete",
+  "title": "柔性翼流固耦合求解器：网格敏感性与耦合稳定性进展",
+  "subtitle": "完整项目组会 · 完全合成示例",
+  "presenter": "wzh666-2",
+  "affiliation": "计算工程研究组",
+  "date": "2026-09-28",
+  "audience": "项目组与导师",
+  "durationMinutes": 15,
+  "missingInputs": [],
+  "sources": [
+    {
+      "id": "P1",
+      "title": "Flexible foil FSI synthetic project dataset",
+      "authors": "wzh666-2",
+      "year": 2026,
+      "synthetic": true,
+      "license": "CC BY 4.0",
+      "usage": "All project status, plots, and values are fictional."
+    },
+    {
+      "id": "P2",
+      "title": "Synthetic solver development log",
+      "authors": "wzh666-2",
+      "year": 2026,
+      "synthetic": true,
+      "license": "CC BY 4.0",
+      "usage": "Fictional milestones and diagnostic notes."
+    }
+  ],
+  "slides": [
+    {
+      "kind": "cover",
+      "title": "封面",
+      "takeaway": "本期完成网格敏感性闭环，但高约化速度工况仍受耦合振荡限制。",
+      "timeSeconds": 30,
+      "speakerNotes": "说明所有数据和项目状态均为原创合成示例。",
+      "citations": ["P1", "P2"]
+    },
+    {
+      "kind": "statement",
+      "section": "本次摘要",
+      "title": "空间离散已基本收敛，当前主风险从网格误差转向耦合稳定性",
+      "statement": "中网格与细网格的主频差异仅 0.8%，但高约化速度下残差会在第 6–8 周期放大。",
+      "body": ["完成：三档网格、两个时间步的交叉验证。", "待决策：优先改进松弛策略，还是先扩大稳定工况范围。"],
+      "timeSeconds": 80,
+      "speakerNotes": "先交代完成项、风险和需要讨论的决策。",
+      "citations": ["P1"]
+    },
+    {
+      "kind": "text",
+      "section": "背景与阶段目标",
+      "title": "本阶段目标是得到可用于参数扫描的可信基线，而非追求最大规模",
+      "takeaway": "验收标准同时包含精度、稳定性与单工况周转时间。",
+      "body": ["主频相对差异小于 2%。", "界面残差在 10 个周期内保持有界。", "单工况墙钟时间低于 6 小时。", "自动输出位移、升力、界面功和收敛日志。"],
+      "timeSeconds": 70,
+      "speakerNotes": "解释为什么本阶段不继续加密网格。",
+      "citations": ["P1", "P2"]
+    },
+    {
+      "kind": "table",
+      "section": "上次计划",
+      "title": "五项计划完成四项，唯一延期项与高工况稳定性直接相关",
+      "takeaway": "延期不是资源不足，而是原松弛参数无法跨工况复用。",
+      "table": {
+        "headers": ["任务", "目标", "状态", "证据", "备注"],
+        "rows": [
+          ["粗/中/细网格", "3 档", "完成", "18 个算例", "主频已收敛"],
+          ["时间步交叉", "2 档", "完成", "12 个算例", "相位差可接受"],
+          ["日志自动化", "4 类", "完成", "CI 产物", "可追溯"],
+          ["高工况扩展", "Ur=8", "延期", "残差日志", "第 6–8 周期发散"],
+          ["基线报告", "v1", "完成", "内部文档", "待导师确认"]
+        ],
+        "columnWidths": [2.25, 1.5, 1.45, 2.45, 4.05]
+      },
+      "timeSeconds": 75,
+      "speakerNotes": "用证据列而不是口头宣称完成。",
+      "citations": ["P2"]
+    },
+    {
+      "kind": "diagram",
+      "section": "本期工作流",
+      "title": "求解、监测和回归检查已串成可重复流水线",
+      "takeaway": "本期最大的工程进展是把诊断证据自动化，而不只是多跑算例。",
+      "diagram": {
+        "nodes": [
+          {"id": "a", "label": "参数生成", "detail": "网格 × 步长 × 工况"},
+          {"id": "b", "label": "批量求解", "detail": "可恢复检查点"},
+          {"id": "c", "label": "诊断提取", "detail": "残差 / 功 / 主频"},
+          {"id": "d", "label": "回归门禁", "detail": "阈值判定与归档"}
+        ],
+        "edges": [
+          {"from": "a", "to": "b", "label": "case"},
+          {"from": "b", "to": "c", "label": "logs"},
+          {"from": "c", "to": "d", "label": "metrics"}
+        ]
+      },
+      "body": ["失败算例保留最后稳定检查点，支持重新启动。", "每次代码修改都与冻结基线自动比较。"],
+      "timeSeconds": 75,
+      "speakerNotes": "强调可重复性和可诊断性。",
+      "citations": ["P2"]
+    },
+    {
+      "kind": "chart",
+      "section": "关键结果 1",
+      "title": "中网格已捕获主频，继续加密只带来边际改进",
+      "takeaway": "中网格与细网格主频差 0.8%，满足阶段验收标准。",
+      "chart": {
+        "type": "column",
+        "categories": ["粗网格", "中网格", "细网格"],
+        "series": [{"name": "归一化主频", "values": [0.94, 0.992, 1.0]}],
+        "unit": "相对细网格",
+        "synthetic": true
+      },
+      "analysis": ["粗网格低估主频约 6%。", "中网格进入平台区，适合作为参数扫描基线。", "细网格成本约为中网格 2.1 倍。"],
+      "timeSeconds": 85,
+      "speakerNotes": "强调这是合成数据；实际项目需展示误差定义。",
+      "citations": ["P1"]
+    },
+    {
+      "kind": "chart",
+      "section": "关键结果 2",
+      "title": "墙钟时间随网格加密增长更快，细网格不适合大规模扫描",
+      "takeaway": "选择中网格可把单工况控制在 5 小时内。",
+      "chart": {
+        "type": "bar",
+        "categories": ["粗网格", "中网格", "细网格"],
+        "series": [{"name": "墙钟时间", "values": [2.1, 4.7, 9.9]}],
+        "unit": "小时 / 工况",
+        "synthetic": true
+      },
+      "analysis": ["中网格满足精度和周转时间双目标。", "细网格保留用于少量确认工况。", "批处理吞吐量约提高一倍。"],
+      "timeSeconds": 75,
+      "speakerNotes": "把精度结论与成本结论合并成资源决策。",
+      "citations": ["P1"]
+    },
+    {
+      "kind": "chart",
+      "section": "异常诊断",
+      "title": "高工况发散前，界面功漂移先于位移残差抬升",
+      "takeaway": "界面功是更早的预警信号，可用于触发自适应松弛。",
+      "chart": {
+        "type": "line",
+        "categories": ["1", "2", "3", "4", "5", "6", "7", "8"],
+        "series": [
+          {"name": "位移残差", "values": [0.8, 0.7, 0.7, 0.8, 1.0, 1.6, 3.1, 6.2]},
+          {"name": "界面功漂移", "values": [0.4, 0.4, 0.5, 0.7, 1.4, 2.8, 5.0, 8.1]}
+        ],
+        "unit": "归一化指标",
+        "synthetic": true
+      },
+      "analysis": ["第 5 周期界面功已越过预警阈值。", "位移残差到第 6 周期才明显放大。", "固定松弛未利用这一提前量。"],
+      "timeSeconds": 90,
+      "speakerNotes": "说明两条曲线仅用于时序比较，数值尺度已归一化。",
+      "citations": ["P1", "P2"]
+    },
+    {
+      "kind": "comparison",
+      "section": "已尝试方案",
+      "title": "减小固定松弛能延后发散，却显著增加低工况迭代次数",
+      "takeaway": "单一固定参数无法覆盖整个工况范围。",
+      "comparison": {
+        "left": {"title": "已验证有效", "items": ["松弛 0.35：稳定到第 10 周期", "降低宏步：高工况残差下降", "检查点恢复：失败成本降低"]},
+        "right": {"title": "代价与否定项", "items": ["低工况迭代数增加约 45%", "统一减小时间步成本过高", "仅增加最大迭代数不能阻止能量漂移"]}
+      },
+      "timeSeconds": 80,
+      "speakerNotes": "清楚说明已经排除的简单方案，避免重复建议。",
+      "citations": ["P1", "P2"]
+    },
+    {
+      "kind": "decision",
+      "section": "需要讨论",
+      "title": "当前需要的是路线选择，而不是再调一个固定参数",
+      "takeaway": "建议先实现基于界面功预警的自适应松弛。",
+      "decision": {
+        "question": "下一周期应优先投入哪条路线？",
+        "options": ["A. 自适应松弛：改动小，直接针对预警信号", "B. 准牛顿耦合：潜在收益高，但开发量大", "C. 扩大稳定工况：能交付更多数据，但绕开根因"],
+        "recommendation": "选择 A，并设置两周止损点：若 Ur=8 仍不能稳定 10 周期，再转向 B。"
+      },
+      "timeSeconds": 90,
+      "speakerNotes": "请导师确认优先级、止损条件和是否允许推迟参数扫描。",
+      "citations": ["P2"]
+    },
+    {
+      "kind": "table",
+      "section": "下一步计划",
+      "title": "未来三周以可验证里程碑推进，并保留明确回退路线",
+      "takeaway": "每周都产生可判定证据，不把风险留到周期末。",
+      "table": {
+        "headers": ["周次", "交付", "验收指标", "主要风险", "回退"],
+        "rows": [
+          ["W1", "自适应松弛原型", "3 个历史日志回放", "阈值敏感", "网格搜索阈值"],
+          ["W2", "在线耦合测试", "Ur=8 稳定 10 周期", "重算成本", "限制回退次数"],
+          ["W3", "小规模参数扫描", "12 工况自动完成", "队列资源", "分两批提交"]
+        ],
+        "columnWidths": [1.25, 2.75, 3.15, 2.45, 2.3]
+      },
+      "timeSeconds": 75,
+      "speakerNotes": "明确每周验收与回退，不把“继续调参”当作计划。",
+      "citations": ["P2"]
+    },
+    {
+      "kind": "sources",
+      "section": "来源登记",
+      "title": "项目状态与数值均为原创合成示例，不代表真实研究结果",
+      "takeaway": "真实组会应登记数据版本、脚本提交、图片来源和责任人。",
+      "timeSeconds": 55,
+      "speakerNotes": "结束前再次强调示例性质和使用边界。",
+      "citations": ["P1", "P2"]
+    }
+  ]
+}
+
