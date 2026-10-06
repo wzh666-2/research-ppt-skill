@@ -14,6 +14,9 @@ test('SKILL.md and openai.yaml contain required metadata', () => {
   assert.match(yaml, /display_name: "Research PPT Maker"/);
   assert.match(yaml, /\$research-ppt-maker/);
   assert.match(yaml, /allow_implicit_invocation: true/);
+  const runtime = JSON.parse(fs.readFileSync(path.join(ROOT, 'skills/research-ppt-maker/package.json'), 'utf8'));
+  assert.equal(runtime.dependencies.pptxgenjs, '4.0.1');
+  assert.equal(runtime.overrides['image-size'], '2.0.4');
 });
 
 test('repository never tracks private SciDraw references', () => {
@@ -31,4 +34,3 @@ test('repository never tracks private SciDraw references', () => {
   walk(ROOT);
   assert.deepEqual(forbidden, []);
 });
-

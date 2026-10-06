@@ -25,6 +25,8 @@ $skill-installer install https://github.com/wzh666-2/research-ppt-skill/tree/mai
 
 也可以克隆仓库后，将 `skills/research-ppt-maker` 复制到个人 Skill 目录。
 
+首次调用时，Skill 会在自身目录执行一次 `npm ci` 安装锁定的生成器依赖；依赖安装完成后，PPTX 生成无需联网。
+
 ### 调用
 
 ```text
@@ -65,6 +67,9 @@ Two modes are included:
 - `$research-ppt-maker 组会汇报` — a 10–14 slide full project lab meeting.
 
 The default language is Chinese; English is supported through `language: "en"`. See the [deck specification](skills/research-ppt-maker/references/deck-spec.md), [design system](skills/research-ppt-maker/references/design-system.md), and [originality policy](ORIGINALITY.md).
+
+The installed Skill carries its own locked Node runtime manifest. On first use
+it runs `npm ci` in the Skill directory; subsequent deck generation is offline.
 
 The `v0.1.0` release provides an installable Skill ZIP, two generated example decks, and preview images. All are generated from fictional data and licensed CC BY 4.0.
 

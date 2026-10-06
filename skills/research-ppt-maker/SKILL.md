@@ -33,12 +33,22 @@ For either mode, also read:
    blocks, and status boards. Do not embed a paper figure unless the user
    explicitly asks and the source/license/risk fields are recorded.
 5. Write the intermediate JSON in the schema described by
-   `references/deck-spec.md`, then validate and build:
+   `references/deck-spec.md`. Resolve this Skill's own directory. On first use,
+   or when `node_modules` is absent, install its locked runtime dependencies:
 
    ```bash
-   node skills/research-ppt-maker/scripts/validate-spec.mjs input.json
-   node skills/research-ppt-maker/scripts/build-deck.mjs input.json output.pptx
+   npm ci --prefix <skill-directory>
    ```
+
+   Then validate and build with absolute or correctly resolved paths:
+
+   ```bash
+   node <skill-directory>/scripts/validate-spec.mjs input.json
+   node <skill-directory>/scripts/build-deck.mjs input.json output.pptx
+   ```
+
+   Once dependencies are installed, validation and generation require no
+   network access.
 
 6. Render every slide and inspect every rendered image for overflow, overlap,
    font substitution, contrast, alignment, and visual consistency. Verify the
